@@ -8,6 +8,7 @@ steal(
 	"./mustache_core.js",
 	"./mustache_helpers.js",
 	"can/view/callbacks",
+	"can/view/bindings",
 	function(can, parser, target,  HTMLSectionBuilder, TextSectionBuilder, mustacheCore, mustacheHelpers, viewCallbacks ){
 
 	// Make sure that we can also use our modules with Stache as a plugin

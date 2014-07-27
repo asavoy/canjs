@@ -40,7 +40,8 @@ module.exports = function (grunt) {
 			test: function (definition, key) {
 				var name = key.substr(key.lastIndexOf('/') + 1);
 				var path = key.replace('can/', '') + '/';
-				return path + name + '_test.js';
+				var out = path + name + '_test.js';
+				return out;
 			},
 
 			options: function (config) {
@@ -68,14 +69,7 @@ module.exports = function (grunt) {
 			libs: {
 				template: 'test/templates/__configuration__.html.ejs',
 				builder: builderJSON,
-				out: 'test/',
-				transform: {
-					options: function () {
-						this.steal.map = (this.steal && this.steal.map) || {};
-						this.steal.map['*'] = this.steal.map['*'] || {};
-						return this;
-					}
-				}
+				out: 'test/'
 			},
 			dist: testifyDist,
 			dev: _.extend({}, testifyDist, {
@@ -126,12 +120,12 @@ module.exports = function (grunt) {
 				pkg: pkg,
 				builder: builderJSON,
 				steal: {
+					main: "can/can",
+					config: __dirname + "/stealconfig.js",
 					map: {
-						'*': {
-							'can/': ''
-						}
+						'can/': ''
 					},
-					root: __dirname
+					baseURL: __dirname + "/"
 				}
 			},
 			dist: {
@@ -139,19 +133,22 @@ module.exports = function (grunt) {
 					prefix: 'can.'
 				},
 				files: {
-					'dist/': '.'
+					'dist/': 'can.js'
 				}
 			}
 		},
 		amdify: {
 			options: {
+				pkg: pkg,
+				builder: builderJSON,
 				steal: {
-					root: '../',
+					config: __dirname + "/stealconfig.js",
+					main: "can/can",
 					map: {
-						'*': {
-							'can/': baseName
-						}
-					}
+						"can/util/util": "can/util/util",
+						'can/': ''
+					},
+					baseURL: __dirname + "/"
 				},
 				map: getAmdifyMap(baseName),
 				banner: banner
@@ -161,7 +158,7 @@ module.exports = function (grunt) {
 					ids: amdIds
 				},
 				files: {
-					'dist/amd/': '.'
+					'dist/amd/': 'can.js'
 				}
 			},
 			dev: {
@@ -170,19 +167,22 @@ module.exports = function (grunt) {
 					ids: amdIds
 				},
 				files: {
-					'dist/amd-dev/': '.'
+					'dist/amd-dev/': 'can.js'
 				}
 			}
 		},
 		stealify: {
 			options: {
+				pkg: pkg,
+				builder: builderJSON,
 				steal: {
-					root: '../',
+					config: __dirname + "/stealconfig.js",
+					main: "can/can",
 					map: {
-						'*': {
-							'can/': baseName
-						}
-					}
+						"can/util/util": "can/util/util",
+						'can/*': baseName,
+					},
+					baseURL: __dirname + "/"
 				},
 				banner: banner
 			},
@@ -194,7 +194,7 @@ module.exports = function (grunt) {
 						}), _.keys(builderJSON.modules))
 				},
 				files: {
-					'dist/steal/': '.'
+					'dist/steal/': 'can.js'
 				}
 			}
 		},
@@ -424,20 +424,16 @@ module.exports = function (grunt) {
 			options: {
 				builder: builderJSON,
 				steal: {
-					map: {
-						'*': {
-							'jquery/jquery.js' : 'lib/jquery/jquery.js',
-							'can/': ''
-						}
+					paths: {
+						"jquery/jquery": "lib/jquery/jquery.js",
+						"can/*": "*.js"
 					},
-					shim: {
-						'jquery': {
-							'exports': 'jQuery'
+					meta: {
+						"jquery": {
+							"format": "global",
+							"exports": "jQuery"
 						}
 					}
-				},
-				shim: {
-					'jquery/jquery.js': 'jQuery'
 				}
 			},
 			latest: {
